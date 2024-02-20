@@ -1,2 +1,2 @@
-# content-aggregator
-a customizable content aggregator
+# Medley
+A customizable content aggregator.
