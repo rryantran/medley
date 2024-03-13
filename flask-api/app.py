@@ -37,6 +37,7 @@ class FeedLinkResource(Resource):
     def get(self):
         """Get all feed links"""
         feed_links = FeedLink.query.all()
+
         return feed_links
 
     @api.marshal_with(feedlink_model)
@@ -56,17 +57,29 @@ class FeedLinkResource(Resource):
 
 @api.route('/feedlinks/<int:id>')
 class FeedLinkResource(Resource):
+    @api.marshal_with(feedlink_model)
     def get(self, id):
         """Get a feed link"""
-        pass
+        feed_link = FeedLink.query.get_or_404(id)
 
+        return feed_link
+
+    @api.marshal_with(feedlink_model)
     def put(self, id):
         """Update a feed link"""
-        pass
+        feed_link = FeedLink.query.get_or_404(id)
+        data = request.get_json()
+        feed_link.update(data['name'], data['url'])
 
+        return feed_link
+
+    @api.marshal_with(feedlink_model)
     def delete(self, id):
         """Delete a feed link"""
-        pass
+        feed_link = FeedLink.query.get_or_404(id)
+        feed_link.delete()
+
+        return feed_link
 
 
 @app.shell_context_processor
