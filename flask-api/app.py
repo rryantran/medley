@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_restx import Api, Resource, fields
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevConfig
 from exts import db
@@ -113,6 +113,7 @@ class FeedLinkResource(Resource):
 
     @api.marshal_with(feedlink_model)
     @api.expect(feedlink_model)
+    @jwt_required
     def post(self):
         """Create a new feed link"""
         data = request.get_json()
@@ -138,6 +139,7 @@ class FeedLinkResource(Resource):
 
     @api.marshal_with(feedlink_model)
     @api.expect(feedlink_model)
+    @jwt_required
     def put(self, id):
         """Update a feed link"""
         feed_link = FeedLink.query.get_or_404(id)
@@ -147,6 +149,7 @@ class FeedLinkResource(Resource):
         return feed_link
 
     @api.marshal_with(feedlink_model)
+    @jwt_required
     def delete(self, id):
         """Delete a feed link"""
         feed_link = FeedLink.query.get_or_404(id)
