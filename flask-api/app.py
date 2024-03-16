@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_restx import Api, fields, Resource
 from flask_migrate import Migrate
+from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevConfig
 from exts import db
 from models import FeedLink, User
@@ -18,7 +19,7 @@ db.init_app(app)
 # initialize migrate
 migrate = Migrate(app, db)
 
-# serialize feedlink model
+# feed link model
 feedlink_model = api.model(
     'FeedLink',
     {
@@ -28,6 +29,41 @@ feedlink_model = api.model(
     },
 
 )
+
+
+# sign up model
+signup_model = api.model(
+    'SignUp',
+    {
+        'email': fields.String(),
+        'password': fields.String(),
+        'password_2': fields.String(),
+    },
+)
+
+
+@api.route('/signup')
+class SignUp(Resource):
+    @api.expect(signup_model)
+    def post(self):
+        """Create a new user"""
+        data = request.get_json()
+
+        # check if user already exists
+        exists = User.query.filter_by(email=data['email']).first()
+        if exists is not None:
+            return {'message': 'Email already in use'}, 400
+
+        # check if passwords match
+        if data['password'] != data['password_2']:
+            return {'message': 'Passwords do not match'}, 400
+
+        new_user = User(
+            email=data['email'], password=generate_password_hash(data['password']))
+
+        new_user.save()
+
+        return {'message': 'User created successfully'}, 201
 
 
 @api.route('/feedlinks')
