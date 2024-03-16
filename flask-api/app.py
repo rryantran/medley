@@ -40,6 +40,7 @@ class FeedLinkResource(Resource):
         return feed_links
 
     @api.marshal_with(feedlink_model)
+    @api.expect(feedlink_model)
     def post(self):
         """Create a new feed link"""
         data = request.get_json()
@@ -64,6 +65,7 @@ class FeedLinkResource(Resource):
         return feed_link
 
     @api.marshal_with(feedlink_model)
+    @api.expect(feedlink_model)
     def put(self, id):
         """Update a feed link"""
         feed_link = FeedLink.query.get_or_404(id)
