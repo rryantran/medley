@@ -10,6 +10,10 @@ class User(db.Model):
     def __repr__(self):
         return f"<User '{self.email}'>"
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 # feed link model
 class FeedLink(db.Model):
