@@ -1,6 +1,7 @@
 from flask import Flask, request
-from flask_restx import Api, fields, Resource
+from flask_restx import Api, Resource, fields
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevConfig
 from exts import db
@@ -18,6 +19,9 @@ db.init_app(app)
 
 # initialize migrate
 migrate = Migrate(app, db)
+
+# initialize jwt
+jwt = JWTManager(app)
 
 # feed link model
 feedlink_model = api.model(
@@ -41,6 +45,15 @@ signup_model = api.model(
     },
 )
 
+# log in model
+login_model = api.model(
+    'LogIn',
+    {
+        'email': fields.String(),
+        'password': fields.String(),
+    },
+)
+
 
 @api.route('/signup')
 class SignUp(Resource):
@@ -50,8 +63,8 @@ class SignUp(Resource):
         data = request.get_json()
 
         # check if user already exists
-        exists = User.query.filter_by(email=data['email']).first()
-        if exists is not None:
+        user = User.query.filter_by(email=data['email']).first()
+        if user is not None:
             return {'message': 'Email already in use'}, 400
 
         # check if passwords match
@@ -64,6 +77,29 @@ class SignUp(Resource):
         new_user.save()
 
         return {'message': 'User created successfully'}, 201
+
+
+@api.route('/login')
+class LogIn(Resource):
+    @api.expect(login_model)
+    def post(self):
+        """Log in a user"""
+        data = request.get_json()
+
+        # check if user exists and password is correct
+        user = User.query.filter_by(email=data['email']).first()
+        if user is None or not check_password_hash(user.password, data['password']):
+            return {'message': 'Invalid email or password'}, 400
+
+        # create access and refresh tokens
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
+
+        return {
+            'message': 'Logged in successfully',
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }, 200
 
 
 @api.route('/feedlinks')
