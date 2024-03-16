@@ -1,10 +1,9 @@
 from flask import Flask, request
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, fields, Resource
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 from config import DevConfig
 from exts import db
-from models import FeedLink
+from models import FeedLink, User
 
 # initialize app
 app = Flask(__name__)
@@ -84,4 +83,4 @@ class FeedLinkResource(Resource):
 
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'FeedLink': FeedLink}
+    return {'db': db, 'FeedLink': FeedLink, 'User': User}
