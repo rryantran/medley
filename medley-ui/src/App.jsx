@@ -2,18 +2,18 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const App = () => {
-  const [data, setData] = useState(null);
+  const [feedLink, setFeedLink] = useState(null);
 
   useEffect(() => {
-    axios.get("/api/test").then((response) => {
-      console.log(response.data.test);
-      setData(response.data.test);
+    axios.get("/api/feedlinks/1").then((response) => {
+      console.log(response.data.url);
+      setFeedLink(response.data.url);
     });
   }, []);
 
   return (
     <>
-      <div>{data}</div>
+      <div>{feedLink}</div>
     </>
   );
 };
