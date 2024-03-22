@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request
 from flask_restx import Api, Resource, fields
 from flask_migrate import Migrate
@@ -5,7 +6,7 @@ from flask_jwt_extended import JWTManager, create_access_token, create_refresh_t
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevConfig
 from exts import db
-from models import FeedLink, User
+from models import Article, FeedLink, User
 
 # initialize app
 app = Flask(__name__)
@@ -22,18 +23,6 @@ migrate = Migrate(app, db)
 
 # initialize jwt
 jwt = JWTManager(app)
-
-# feed link model
-feedlink_model = api.model(
-    'FeedLink',
-    {
-        'id': fields.Integer(),
-        'name': fields.String(),
-        'url': fields.String(),
-    },
-
-)
-
 
 # sign up model
 signup_model = api.model(
@@ -52,6 +41,30 @@ login_model = api.model(
         'email': fields.String(),
         'password': fields.String(),
     },
+)
+
+# feed link model
+feedlink_model = api.model(
+    'FeedLink',
+    {
+        'id': fields.Integer(),
+        'name': fields.String(),
+        'url': fields.String(),
+    },
+
+)
+
+# article model
+article_model = api.model(
+    'Article',
+    {
+        'id': fields.Integer(),
+        'title': fields.String(),
+        'author': fields.String(),
+        'pub_date': fields.DateTime(),
+        'source': fields.String(),
+        'url': fields.String(),
+    }
 )
 
 
@@ -156,6 +169,34 @@ class FeedLinkResource(Resource):
         feed_link.delete()
 
         return feed_link
+
+
+@api.route('/articles')
+class ArticleResource(Resource):
+    @api.marshal_with(article_model)
+    def get(self):
+        """Get all articles"""
+        articles = Article.query.all()
+
+        return articles
+
+    @api.marshal_with(article_model)
+    @api.expect(article_model)
+    def post(self):
+        """Create a new article"""
+        data = request.get_json()
+
+        new_article = Article(
+            title=data['title'],
+            author=data['author'],
+            pub_date=datetime.fromisoformat(data['pub_date']),
+            source=data['source'],
+            url=data['url']
+        )
+
+        new_article.save()
+
+        return new_article, 201
 
 
 @app.shell_context_processor
