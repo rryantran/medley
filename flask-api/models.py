@@ -36,3 +36,20 @@ class FeedLink(db.Model):
         self.name = name
         self.url = url
         db.session.commit()
+
+
+# article model
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    author = db.Column(db.String(255), nullable=False)
+    pub_date = db.Column(db.DateTime, nullable=False)
+    source = db.Column(db.String(255), nullable=False)
+    url = db.Column(db.Text(), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f"<Article '{self.title}', >"
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
