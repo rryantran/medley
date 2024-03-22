@@ -1,8 +1,9 @@
-from datetime import datetime
 from flask import Flask, request
-from flask_restx import Api, Resource, fields
-from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required
+from flask_migrate import Migrate
+from flask_restx import Api, Resource, fields
+from datetime import datetime
+from sqlalchemy import select
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevConfig
 from exts import db
@@ -76,7 +77,8 @@ class SignUp(Resource):
         data = request.get_json()
 
         # check if user already exists
-        user = User.query.filter_by(email=data['email']).first()
+        user = db.session.execute(
+            db.select(User).filter_by(email=data['email'])).scalar()
         if user is not None:
             return {'message': 'Email already in use'}, 400
 
@@ -100,7 +102,8 @@ class LogIn(Resource):
         data = request.get_json()
 
         # check if user exists and password is correct
-        user = User.query.filter_by(email=data['email']).first()
+        user = db.session.execute(
+            db.select(User).filter_by(email=data['email'])).scalar()
         if user is None or not check_password_hash(user.password, data['password']):
             return {'message': 'Invalid email or password'}, 400
 
@@ -118,15 +121,16 @@ class LogIn(Resource):
 @api.route('/feedlinks')
 class FeedLinkResource(Resource):
     @api.marshal_with(feedlink_model)
+    @jwt_required()
     def get(self):
         """Get all feed links"""
-        feed_links = FeedLink.query.all()
+        feed_links = db.session.execute(db.select(FeedLink)).scalars().all()
 
         return feed_links
 
     @api.marshal_with(feedlink_model)
     @api.expect(feedlink_model)
-    @jwt_required
+    @jwt_required()
     def post(self):
         """Create a new feed link"""
         data = request.get_json()
@@ -144,28 +148,35 @@ class FeedLinkResource(Resource):
 @api.route('/feedlinks/<int:id>')
 class FeedLinkResource(Resource):
     @api.marshal_with(feedlink_model)
+    @jwt_required()
     def get(self, id):
         """Get a feed link"""
-        feed_link = FeedLink.query.get_or_404(id)
+        feed_link = db.session.get(FeedLink, id)
+        if feed_link is None:
+            return 404
 
         return feed_link
 
     @api.marshal_with(feedlink_model)
     @api.expect(feedlink_model)
-    @jwt_required
+    @jwt_required()
     def put(self, id):
         """Update a feed link"""
-        feed_link = FeedLink.query.get_or_404(id)
+        feed_link = db.session.get(FeedLink, id)
+        if feed_link is None:
+            return 404
         data = request.get_json()
         feed_link.update(data['name'], data['url'])
 
         return feed_link
 
     @api.marshal_with(feedlink_model)
-    @jwt_required
+    @jwt_required()
     def delete(self, id):
         """Delete a feed link"""
-        feed_link = FeedLink.query.get_or_404(id)
+        feed_link = db.session.get(FeedLink, id)
+        if feed_link is None:
+            return 404
         feed_link.delete()
 
         return feed_link
@@ -174,14 +185,16 @@ class FeedLinkResource(Resource):
 @api.route('/articles')
 class ArticleResource(Resource):
     @api.marshal_with(article_model)
+    @jwt_required()
     def get(self):
         """Get all articles"""
-        articles = Article.query.all()
+        articles = db.session.execute(db.select(Article)).scalars().all()
 
         return articles
 
     @api.marshal_with(article_model)
     @api.expect(article_model)
+    @jwt_required()
     def post(self):
         """Create a new article"""
         data = request.get_json()
