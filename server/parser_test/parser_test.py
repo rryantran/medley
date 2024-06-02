@@ -11,3 +11,6 @@ d = feedparser.parse(
 # test output
 print(d.feed.title)
 print(d.entries[0].title)
+print(d.entries[0].author)
+print(d.entries[0].published)
+print(d.entries[0].link)
