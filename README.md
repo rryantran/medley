@@ -1,2 +1,3 @@
-# medley-2
-A customizable content aggregator
+# Medley
+
+Medley is a customizable content aggregator built with React and Flask.
