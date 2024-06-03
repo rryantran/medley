@@ -10,7 +10,7 @@ class Config:
         'SQLALCHEMY_TRACK_MODIFICATIONS', cast=bool)
 
 
-class DevConfig:
+class DevConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASE_DIR, "dev.db")
     SQLALCHEMY_ECHO = config('SQLALCHEMY_ECHO', cast=bool)
 
