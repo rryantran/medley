@@ -2,12 +2,14 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_restx import Api
+from config import DevConfig
 from exts import db
 from models import User, Feed, Article
 from namespaces.auth import auth_ns
+from namespaces.user import user_ns
 
 
-def create_app(config):
+def create_app(config=DevConfig):
     # initialize app
     app = Flask(__name__)
     app.config.from_object(config)
@@ -24,6 +26,7 @@ def create_app(config):
     # initialize api
     api = Api(app)
     api.add_namespace(auth_ns)
+    api.add_namespace(user_ns)
 
     # shell context
     @app.shell_context_processor
