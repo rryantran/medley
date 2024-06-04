@@ -6,7 +6,6 @@ from models import User, Feed
 # initialize namespace
 user_ns = Namespace('user', description='User routes')
 
-
 # user serializer
 user_model = user_ns.model('User', {
     'id': fields.Integer(),
