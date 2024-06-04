@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from feedparser import parse
@@ -26,6 +27,7 @@ article_model = feed_ns.model('Article', {
 
 @feed_ns.route('/<int:feed_id>/articles')
 class FeedArticles(Resource):
+    @feed_ns.marshal_with(article_model)
     def put(self, feed_id):
         '''update a feed's articles'''
         feed = db.session.execute(
@@ -44,7 +46,8 @@ class FeedArticles(Resource):
                 new_article = Article(
                     title=entry.title,
                     author=entry.author,
-                    pub_date=entry.published,
+                    pub_date=datetime.strptime(
+                        entry.published, '%a, %d %b %Y %H:%M:%S %z'),
                     url=entry.link
                 )
             else:
@@ -56,4 +59,4 @@ class FeedArticles(Resource):
             feed.articles.extend(new_articles)
             db.session.commit()
 
-        return {'message': 'Articles updated'}, 200
+        return new_articles, 200

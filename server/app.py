@@ -7,6 +7,7 @@ from exts import db
 from models import User, Feed, Article
 from namespaces.auth import auth_ns
 from namespaces.user import user_ns
+from namespaces.feed import feed_ns
 
 
 def create_app(config=DevConfig):
@@ -27,6 +28,7 @@ def create_app(config=DevConfig):
     api = Api(app)
     api.add_namespace(auth_ns)
     api.add_namespace(user_ns)
+    api.add_namespace(feed_ns)
 
     # shell context
     @app.shell_context_processor
