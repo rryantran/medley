@@ -1,9 +1,13 @@
 from datetime import datetime
 from flask import request
 from flask_restx import Namespace, Resource, fields
+from dotenv import load_dotenv
 from feedparser import parse
 from exts import db
 from models import User, Feed, Article
+
+# load environment variables
+load_dotenv("../.env")
 
 # initialize namespace
 user_ns = Namespace('user', description='User routes')
