@@ -22,6 +22,15 @@ feed_model = user_ns.model('Feed', {
     'url': fields.String(),
 })
 
+# article serializer
+article_model = user_ns.model('Article', {
+    'id': fields.Integer(),
+    'title': fields.String(),
+    'author': fields.String(),
+    'pub_date': fields.DateTime(),
+    'url': fields.String(),
+})
+
 
 @user_ns.route('/<int:user_id>/feeds')
 class UserFeeds(Resource):
@@ -82,3 +91,22 @@ class UserFeed(Resource):
                 feed.delete()
 
         return {'message': 'Feed deleted'}, 200
+
+
+@user_ns.route('/<int:user_id>/articles')
+class UserArticles(Resource):
+    @user_ns.marshal_with(article_model)
+    def get(self, user_id):
+        '''get all articles for a user'''
+        user = db.session.execute(
+            db.select(User).filter_by(id=user_id)).scalar()
+
+        if not user:
+            return {'message': 'User not found'}, 404
+
+        all_articles = []
+
+        for feed in user.feeds:
+            all_articles.extend(feed.articles)
+
+        return all_articles, 200
