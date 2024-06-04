@@ -1,7 +1,9 @@
+from datetime import datetime
 from flask import request
 from flask_restx import Namespace, Resource, fields
+from feedparser import parse
 from exts import db
-from models import User, Feed
+from models import User, Feed, Article
 
 # initialize namespace
 user_ns = Namespace('user', description='User routes')
@@ -110,3 +112,38 @@ class UserArticles(Resource):
             all_articles.extend(feed.articles)
 
         return all_articles, 200
+
+    def put(self, user_id):
+        '''update all articles for a user'''
+        user = db.session.execute(
+            db.select(User).filter_by(id=user_id)).scalar()
+
+        if not user:
+            return {'message': 'User not found'}, 404
+
+        for feed in user.feeds:
+            parsed = parse(feed.url)
+            new_articles = []
+
+            for entry in parsed.entries:
+                article_exists = db.session.execute(
+                    db.select(Article).filter_by(url=entry.link)).scalar()
+
+                if not article_exists:
+                    new_article = Article(
+                        title=entry.title,
+                        author=entry.author,
+                        pub_date=datetime.strptime(
+                            entry.published, '%a, %d %b %Y %H:%M:%S %z'),
+                        url=entry.link
+                    )
+
+                    new_articles.append(new_article)
+                else:
+                    break
+
+            if new_articles:
+                feed.articles.extend(new_articles)
+                db.session.commit()
+
+        return {'message': 'Articles updated'}, 200
