@@ -57,7 +57,7 @@ class UserFeeds(Resource):
         )
 
         user.feeds.append(new_feed)
-        new_feed.save()
+        db.session.commit()
 
         return {'message': 'Feed added'}, 201
 
@@ -78,9 +78,6 @@ class UserFeed(Resource):
 
         if feed in user.feeds:
             user.feeds.remove(feed)
-            if user in feed.users:
-                feed.users.remove(user)
-            db.session.commit()
             if not feed.users:
                 feed.delete()
 
