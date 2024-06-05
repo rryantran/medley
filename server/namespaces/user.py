@@ -39,6 +39,12 @@ article_model = user_ns.model('Article', {
 })
 
 
+@user_ns.route('/test')
+class Test(Resource):
+    def get(self):
+        return {'message': 'User routes working'}, 200
+
+
 @user_ns.route('/<int:user_id>/feeds')
 class UserFeeds(Resource):
     @jwt_required()
