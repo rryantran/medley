@@ -39,9 +39,9 @@ article_model = user_ns.model('Article', {
 })
 
 
-@jwt_required()
 @user_ns.route('/<int:user_id>/feeds')
 class UserFeeds(Resource):
+    @jwt_required()
     @user_ns.marshal_with(feed_model)
     def get(self, user_id):
         '''get all feeds for a user'''
@@ -53,6 +53,7 @@ class UserFeeds(Resource):
 
         return user.feeds, 200
 
+    @jwt_required()
     @user_ns.expect(feed_model)
     def post(self, user_id):
         '''add a new feed for a user'''
@@ -79,9 +80,9 @@ class UserFeeds(Resource):
         return {'message': 'Feed added'}, 201
 
 
-@jwt_required()
 @user_ns.route('/<int:user_id>/feeds/<int:feed_id>')
 class UserFeed(Resource):
+    @jwt_required()
     def delete(self, user_id, feed_id):
         '''delete a feed for a user'''
         user = db.session.execute(
@@ -102,9 +103,9 @@ class UserFeed(Resource):
         return {'message': 'Feed deleted'}, 200
 
 
-@jwt_required()
 @user_ns.route('/<int:user_id>/articles')
 class UserArticles(Resource):
+    @jwt_required()
     @user_ns.marshal_with(article_model)
     def get(self, user_id):
         '''get all articles for a user'''
@@ -121,6 +122,7 @@ class UserArticles(Resource):
 
         return all_articles, 200
 
+    @jwt_required()
     def put(self, user_id):
         '''update all articles for a user'''
         user = db.session.execute(
