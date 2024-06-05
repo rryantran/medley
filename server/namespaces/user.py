@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import request
+from flask_jwt_extended import jwt_required
 from flask_restx import Namespace, Resource, fields
 from dotenv import load_dotenv
 from feedparser import parse
@@ -38,6 +39,7 @@ article_model = user_ns.model('Article', {
 })
 
 
+@jwt_required()
 @user_ns.route('/<int:user_id>/feeds')
 class UserFeeds(Resource):
     @user_ns.marshal_with(feed_model)
@@ -77,6 +79,7 @@ class UserFeeds(Resource):
         return {'message': 'Feed added'}, 201
 
 
+@jwt_required()
 @user_ns.route('/<int:user_id>/feeds/<int:feed_id>')
 class UserFeed(Resource):
     def delete(self, user_id, feed_id):
@@ -99,6 +102,7 @@ class UserFeed(Resource):
         return {'message': 'Feed deleted'}, 200
 
 
+@jwt_required()
 @user_ns.route('/<int:user_id>/articles')
 class UserArticles(Resource):
     @user_ns.marshal_with(article_model)
