@@ -113,6 +113,7 @@ const SignUp = () => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         ></FormInput>
+
         <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
       </SignUpForm>
 
