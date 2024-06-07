@@ -1,5 +1,5 @@
 from flask import request
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_restx import Namespace, Resource, fields
 from werkzeug.security import generate_password_hash, check_password_hash
 from exts import db
@@ -73,3 +73,16 @@ class LogIn(Resource):
         refresh_token = create_refresh_token(identity=user.id)
 
         return {'message': 'Logged in successfully', 'access_token': access_token, 'refresh_token': refresh_token}, 200
+
+
+# refresh token route
+@auth_ns.route('/refresh')
+class Refresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        '''refresh access token'''
+        current_user = get_jwt_identity()
+
+        new_access_token = create_access_token(identity=current_user)
+
+        return {'access_token': new_access_token}, 200
