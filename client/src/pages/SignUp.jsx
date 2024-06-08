@@ -7,13 +7,8 @@ const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 70vh;
-`;
-
-const SignUpContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  height: 70vh;
 `;
 
 const Heading = styled.h2`
@@ -93,42 +88,40 @@ const SignUp = () => {
 
   return (
     <PageContainer>
-      <SignUpContainer>
-        <Heading>Sign Up</Heading>
+      <Heading>Sign Up</Heading>
 
-        <SignUpForm>
-          <FormInput
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></FormInput>
+      <SignUpForm>
+        <FormInput
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        ></FormInput>
+        <FormInput
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        ></FormInput>
+        <FormInput
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        ></FormInput>
+        <FormInput
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        ></FormInput>
 
-          <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
-        </SignUpForm>
+        <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
+      </SignUpForm>
 
-        <LogInPrompt>
-          Already have an account? <LogInLink to="/login">Log in</LogInLink>
-        </LogInPrompt>
-      </SignUpContainer>
+      <LogInPrompt>
+        Already have an account? <LogInLink to="/login">Log in</LogInLink>
+      </LogInPrompt>
     </PageContainer>
   );
 };
