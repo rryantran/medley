@@ -5,12 +5,17 @@ const NavBarContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 25px 100px;
+  margin: 0;
+  padding: 25px 100px;
+  border-bottom: 1px solid #c0c0c0;
   font-family: Arial, sans-serif;
 `;
 
 const Logo = styled.h1`
   margin: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 5px;
+  text-decoration-color: #ffc0cb;
 `;
 
 const LinksContainer = styled.div`
@@ -23,6 +28,7 @@ const StyledLink = styled(Link)`
   color: black;
   &:hover {
     text-decoration: underline;
+    text-decoration-color: #ffc0cb;
   }
 `;
 

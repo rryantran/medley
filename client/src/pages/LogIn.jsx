@@ -3,6 +3,13 @@ import styled from "styled-components";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 60vh;
+`;
+
 const LogInContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -81,30 +88,33 @@ const SignUp = () => {
   };
 
   return (
-    <LogInContainer>
-      <Heading>Log In</Heading>
+    <PageContainer>
+      <LogInContainer>
+        <Heading>Log In</Heading>
 
-      <LogInForm>
-        <FormInput
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        ></FormInput>
-        <FormInput
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></FormInput>
+        <LogInForm>
+          <FormInput
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          ></FormInput>
+          <FormInput
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          ></FormInput>
 
-        <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
-      </LogInForm>
+          <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
+        </LogInForm>
 
-      <SignUpPrompt>
-        Don't have an account? <SignUpLink to="/signup">Create one</SignUpLink>
-      </SignUpPrompt>
-    </LogInContainer>
+        <SignUpPrompt>
+          Don't have an account?{" "}
+          <SignUpLink to="/signup">Create one</SignUpLink>
+        </SignUpPrompt>
+      </LogInContainer>
+    </PageContainer>
   );
 };
 
