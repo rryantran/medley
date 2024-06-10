@@ -2,6 +2,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Alert from "../components/Alert";
 
 const PageContainer = styled.div`
   display: flex;
@@ -65,6 +66,8 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [alert, setAlert] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -82,13 +85,24 @@ const SignUp = () => {
         console.log(res.data);
       })
       .catch((err) => {
-        console.log(err.response.data);
+        console.log(err.response.data.message);
+        setAlert(err.response.data.message);
+        setShowAlert(true);
       });
   };
 
   return (
     <PageContainer>
       <Heading>Sign Up</Heading>
+
+      {showAlert && (
+        <Alert
+          message={alert}
+          clickHanlder={() => {
+            setShowAlert(false);
+          }}
+        />
+      )}
 
       <SignUpForm>
         <FormInput
@@ -97,18 +111,21 @@ const SignUp = () => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         ></FormInput>
+
         <FormInput
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         ></FormInput>
+
         <FormInput
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         ></FormInput>
+
         <FormInput
           type="password"
           placeholder="Confirm Password"

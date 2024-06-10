@@ -11,8 +11,11 @@ const NavBarContainer = styled.div`
   font-family: Arial, sans-serif;
 `;
 
-const Logo = styled.h1`
+const Logo = styled(Link)`
   margin: 0;
+  color: black;
+  font-size: 36px;
+  font-weight: bold;
   text-decoration: underline;
   text-decoration-thickness: 5px;
   text-decoration-color: #ffc0cb;
@@ -28,6 +31,7 @@ const StyledLink = styled(Link)`
   color: black;
   &:hover {
     text-decoration: underline;
+    text-decoration-thickness: 3px;
     text-decoration-color: #ffc0cb;
   }
 `;
@@ -35,10 +39,9 @@ const StyledLink = styled(Link)`
 const NavBar = () => {
   return (
     <NavBarContainer>
-      <Logo>medley</Logo>
+      <Logo to="/">medley</Logo>
 
       <LinksContainer>
-        <StyledLink to="/">Home</StyledLink>
         <StyledLink to="/login">Log In</StyledLink>
         <StyledLink to="/signup">Sign Up</StyledLink>
       </LinksContainer>
