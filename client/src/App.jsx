@@ -7,8 +7,8 @@ import NavBar from "./components/NavBar";
 
 const App = () => {
   // test route
-  axios.get("/api/user/test").then((result) => {
-    console.log(result.data.message);
+  axios.get("/api/user/current").then((result) => {
+    console.log(result.data.user);
   });
 
   return (

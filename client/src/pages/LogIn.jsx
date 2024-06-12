@@ -78,7 +78,7 @@ const SignUp = () => {
     };
 
     axios
-      .post("/api/auth/login", user)
+      .post("/api/auth/login", user, { withCredentials: true })
       .then((res) => {
         console.log(res.data);
         navigate("/");
