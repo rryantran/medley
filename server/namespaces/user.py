@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restx import Namespace, Resource, fields
 from dotenv import load_dotenv
 from feedparser import parse
@@ -39,10 +39,12 @@ article_model = user_ns.model('Article', {
 })
 
 
-@user_ns.route('/test')
-class Test(Resource):
+@user_ns.route('/current')
+class CurrentUser(Resource):
+    @jwt_required()
     def get(self):
-        return {'message': 'User routes working'}, 200
+        user = get_jwt_identity()
+        return {'user': user}, 200
 
 
 @user_ns.route('/<int:user_id>/feeds')
