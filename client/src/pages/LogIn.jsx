@@ -1,7 +1,7 @@
 import axios from "axios";
 import styled from "styled-components";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Alert from "../components/Alert";
 
 const PageContainer = styled.div`
@@ -67,6 +67,8 @@ const SignUp = () => {
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -76,14 +78,16 @@ const SignUp = () => {
     };
 
     axios
-      .post("/api/auth/login", user)
+      .post("/api/auth/login", user, { withCredentials: true })
       .then((res) => {
         console.log(res.data);
+        navigate("/");
       })
       .catch((err) => {
         console.log(err.response.data);
         setAlert(err.response.data.message);
         setShowAlert(true);
+        setPassword("");
       });
   };
 

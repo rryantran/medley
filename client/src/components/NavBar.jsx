@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const NavBarContainer = styled.div`
   display: flex;
@@ -36,7 +37,34 @@ const StyledLink = styled(Link)`
   }
 `;
 
+const LogOut = styled.button`
+  text-decoration: none;
+  color: black;
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
+  &:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-decoration-color: #ffc0cb;
+    cursor: pointer;
+  }
+`;
+
 const NavBar = () => {
+  const handleLogOut = (e) => {
+    e.preventDefault();
+
+    axios
+      .post("/api/auth/logout")
+      .then((result) => {
+        console.log(result.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <NavBarContainer>
       <Logo to="/">medley</Logo>
@@ -44,6 +72,7 @@ const NavBar = () => {
       <LinksContainer>
         <StyledLink to="/login">Log In</StyledLink>
         <StyledLink to="/signup">Sign Up</StyledLink>
+        <LogOut onClick={handleLogOut}>Log Out</LogOut>
       </LinksContainer>
     </NavBarContainer>
   );
