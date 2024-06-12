@@ -2,18 +2,14 @@ import axios from "axios";
 import styled from "styled-components";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Alert from "../components/Alert";
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 60vh;
-`;
-
-const LogInContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  height: 60vh;
 `;
 
 const Heading = styled.h2`
@@ -68,6 +64,8 @@ const SignUpLink = styled(Link)`
 const SignUp = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [alert, setAlert] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -84,36 +82,45 @@ const SignUp = () => {
       })
       .catch((err) => {
         console.log(err.response.data);
+        setAlert(err.response.data.message);
+        setShowAlert(true);
       });
   };
 
   return (
     <PageContainer>
-      <LogInContainer>
-        <Heading>Log In</Heading>
+      <Heading>Log In</Heading>
 
-        <LogInForm>
-          <FormInput
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></FormInput>
+      {showAlert && (
+        <Alert
+          message={alert}
+          clickHanlder={() => {
+            setShowAlert(false);
+          }}
+        />
+      )}
 
-          <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
-        </LogInForm>
+      <LogInForm>
+        <FormInput
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        ></FormInput>
 
-        <SignUpPrompt>
-          Don't have an account?{" "}
-          <SignUpLink to="/signup">Create one</SignUpLink>
-        </SignUpPrompt>
-      </LogInContainer>
+        <FormInput
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        ></FormInput>
+
+        <SubmitButton onClick={handleSubmit}>Log In</SubmitButton>
+      </LogInForm>
+
+      <SignUpPrompt>
+        Don't have an account? <SignUpLink to="/signup">Create one</SignUpLink>
+      </SignUpPrompt>
     </PageContainer>
   );
 };

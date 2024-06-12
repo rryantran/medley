@@ -2,18 +2,14 @@ import axios from "axios";
 import styled from "styled-components";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Alert from "../components/Alert";
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 70vh;
-`;
-
-const SignUpContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  height: 70vh;
 `;
 
 const Heading = styled.h2`
@@ -70,6 +66,8 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [alert, setAlert] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -87,48 +85,60 @@ const SignUp = () => {
         console.log(res.data);
       })
       .catch((err) => {
-        console.log(err.response.data);
+        console.log(err.response.data.message);
+        setAlert(err.response.data.message);
+        setShowAlert(true);
       });
   };
 
   return (
     <PageContainer>
-      <SignUpContainer>
-        <Heading>Sign Up</Heading>
+      <Heading>Sign Up</Heading>
 
-        <SignUpForm>
-          <FormInput
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></FormInput>
-          <FormInput
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></FormInput>
+      {showAlert && (
+        <Alert
+          message={alert}
+          clickHanlder={() => {
+            setShowAlert(false);
+          }}
+        />
+      )}
 
-          <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
-        </SignUpForm>
+      <SignUpForm>
+        <FormInput
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        ></FormInput>
 
-        <LogInPrompt>
-          Already have an account? <LogInLink to="/login">Log in</LogInLink>
-        </LogInPrompt>
-      </SignUpContainer>
+        <FormInput
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        ></FormInput>
+
+        <FormInput
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        ></FormInput>
+
+        <FormInput
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        ></FormInput>
+
+        <SubmitButton onClick={handleSubmit}>Sign Up</SubmitButton>
+      </SignUpForm>
+
+      <LogInPrompt>
+        Already have an account? <LogInLink to="/login">Log in</LogInLink>
+      </LogInPrompt>
     </PageContainer>
   );
 };

@@ -1,5 +1,5 @@
-from flask import request
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask import request, jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 from flask_restx import Namespace, Resource, fields
 from werkzeug.security import generate_password_hash, check_password_hash
 from exts import db
@@ -31,8 +31,11 @@ class SignUp(Resource):
         '''create a new user'''
         data = request.get_json()
 
+        if not data['username'] or not data['email'] or not data['password'] or not data['confirm_password']:
+            return {'message': 'All fields are required'}, 400
+
         if data['password'] != data['confirm_password']:
-            return {'message': 'Password does not match'}, 400
+            return {'message': 'Passwords do not match'}, 400
 
         username_exists = db.session.execute(db.select(User).filter_by(
             username=data['username'])).scalar()
@@ -40,9 +43,9 @@ class SignUp(Resource):
             db.select(User).filter_by(email=data['email'])).scalar()
 
         if username_exists:
-            return {'message': 'Username already in use'}, 400
+            return {'message': 'Username is already in use'}, 400
         elif email_exists:
-            return {'message': 'Email already in use'}, 400
+            return {'message': 'Email is already in use'}, 400
 
         new_user = User(
             username=data['username'],
@@ -72,7 +75,24 @@ class LogIn(Resource):
         access_token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
 
-        return {'message': 'Logged in successfully', 'access_token': access_token, 'refresh_token': refresh_token}, 200
+        response = jsonify({'login': 'Logged in successfully'})
+        set_access_cookies(response, access_token)
+        set_refresh_cookies(response, refresh_token)
+        response.status_code = 200
+
+        return response
+
+
+# logout route
+@auth_ns.route('/logout')
+class LogOut(Resource):
+    def post(self):
+        '''log out a user'''
+        response = jsonify({'logout': 'Logged out successfully'})
+        unset_jwt_cookies(response)
+        response.status_code = 200
+
+        return response
 
 
 # refresh token route
