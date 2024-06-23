@@ -75,7 +75,7 @@ class LogIn(Resource):
         access_token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
 
-        response = jsonify({'login': 'Logged in successfully'})
+        response = jsonify({'message': 'Logged in successfully'})
         set_access_cookies(response, access_token)
         set_refresh_cookies(response, refresh_token)
         response.status_code = 200
@@ -88,7 +88,7 @@ class LogIn(Resource):
 class LogOut(Resource):
     def post(self):
         '''log out a user'''
-        response = jsonify({'logout': 'Logged out successfully'})
+        response = jsonify({'message': 'Logged out successfully'})
         unset_jwt_cookies(response)
         response.status_code = 200
 
@@ -104,5 +104,8 @@ class Refresh(Resource):
         current_user = get_jwt_identity()
 
         new_access_token = create_access_token(identity=current_user)
+        response = jsonify({'message': 'Token refreshed'})
+        set_access_cookies(response, new_access_token)
+        response.status_code = 200
 
-        return {'access_token': new_access_token}, 200
+        return response
