@@ -80,7 +80,7 @@ const SignUp = () => {
     };
 
     axios
-      .post("/api/auth/login", user, { withCredentials: true })
+      .post("/api/auth/login", user)
       .then((res) => {
         console.log(res.data);
         setUser(res.data.id);
