@@ -1,16 +1,12 @@
-import axios from "axios";
-import { Route, Routes } from "react-router-dom";
+import NavBar from "./components/NavBar";
+import Articles from "./pages/Articles";
+import Feeds from "./pages/Feeds";
 import Home from "./pages/Home";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
-import NavBar from "./components/NavBar";
+import { Route, Routes } from "react-router-dom";
 
 const App = () => {
-  // test route
-  axios.get("/api/user/current").then((result) => {
-    console.log(result.data.user);
-  });
-
   return (
     <>
       <NavBar />
@@ -19,6 +15,8 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LogIn />} />
+        <Route path="/articles" element={<Articles />} />
+        <Route path="/feeds" element={<Feeds />} />
       </Routes>
     </>
   );

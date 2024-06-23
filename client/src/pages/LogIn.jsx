@@ -1,8 +1,9 @@
 import axios from "axios";
 import styled from "styled-components";
+import Alert from "../components/Alert";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Alert from "../components/Alert";
+import { useUser } from "../hooks/UserHook";
 
 const PageContainer = styled.div`
   display: flex;
@@ -68,6 +69,7 @@ const SignUp = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,6 +83,7 @@ const SignUp = () => {
       .post("/api/auth/login", user, { withCredentials: true })
       .then((res) => {
         console.log(res.data);
+        setUser(res.data.id);
         navigate("/");
       })
       .catch((err) => {
