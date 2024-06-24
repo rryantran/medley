@@ -1,8 +1,7 @@
-import axios from "axios";
 import styled from "styled-components";
 import Alert from "../components/Alert";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useUser } from "../hooks/UserHook";
 
 const PageContainer = styled.div`
@@ -68,10 +67,9 @@ const SignUp = () => {
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
-  const navigate = useNavigate();
-  const { setUser } = useUser();
+  const { login } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleLogIn = (e) => {
     e.preventDefault();
 
     const user = {
@@ -79,19 +77,12 @@ const SignUp = () => {
       password: password,
     };
 
-    axios
-      .post("/api/auth/login", user)
-      .then((res) => {
-        console.log(res.data);
-        setUser(res.data.id);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err.response.data);
-        setAlert(err.response.data.message);
-        setShowAlert(true);
-        setPassword("");
-      });
+    login(user).catch((err) => {
+      console.log(err.response.data.message);
+      setAlert(err.response.data.message);
+      setShowAlert(true);
+      setPassword("");
+    });
   };
 
   return (
@@ -122,7 +113,7 @@ const SignUp = () => {
           onChange={(e) => setPassword(e.target.value)}
         ></FormInput>
 
-        <SubmitButton onClick={handleSubmit}>Log In</SubmitButton>
+        <SubmitButton onClick={handleLogIn}>Log In</SubmitButton>
       </LogInForm>
 
       <SignUpPrompt>

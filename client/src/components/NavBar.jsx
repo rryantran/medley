@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useUser } from "../hooks/UserHook";
 
 const NavBarContainer = styled.div`
@@ -55,22 +54,14 @@ const LogOut = styled.button`
 `;
 
 const NavBar = () => {
-  const navigate = useNavigate();
-  const { user, setUser } = useUser();
+  const { user, logout } = useUser();
 
   const handleLogOut = (e) => {
     e.preventDefault();
 
-    axios
-      .post("/api/auth/logout")
-      .then((result) => {
-        console.log(result.data.message);
-        setUser(null);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    logout().catch((err) => {
+      console.log(err);
+    });
   };
 
   if (user) {
