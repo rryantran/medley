@@ -75,7 +75,8 @@ class LogIn(Resource):
         access_token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
 
-        response = jsonify({'message': 'Logged in successfully'})
+        response = jsonify(
+            {'message': 'Logged in successfully', 'id': user.id})
         set_access_cookies(response, access_token)
         set_refresh_cookies(response, refresh_token)
         response.status_code = 200
