@@ -10,9 +10,6 @@ const PageContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 60vh;
-`;
-
-const Heading = styled.h2`
   font-family: "Arial", sans-serif;
 `;
 
@@ -49,7 +46,6 @@ const SubmitButton = styled.button`
 
 const SignUpPrompt = styled.p`
   margin-top: 20px;
-  font-family: "Arial", sans-serif;
   font-size: 14px;
 `;
 
@@ -87,7 +83,7 @@ const SignUp = () => {
 
   return (
     <PageContainer>
-      <Heading>Log In</Heading>
+      <h2>Log In</h2>
 
       {showAlert && (
         <Alert
