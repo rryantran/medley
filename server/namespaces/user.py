@@ -67,6 +67,9 @@ class UserFeeds(Resource):
         '''add a new feed for a user'''
         data = request.get_json()
 
+        if not data['title'] or not data['url']:
+            return {'message': 'All fields are required'}, 400
+
         user = db.session.execute(
             db.select(User).filter_by(id=user_id)).scalar()
         feed_exists = db.session.execute(

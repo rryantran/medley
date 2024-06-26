@@ -17,6 +17,7 @@ class Config:
 class DevConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASE_DIR, "dev.db")
     SQLALCHEMY_ECHO = False
+    JWT_COOKIE_CSRF_PROTECT = False
 
 
 class ProdConfig:
