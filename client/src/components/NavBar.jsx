@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { useUser } from "../hooks/UserHook";
 
 const NavBarContainer = styled.div`
   display: flex;
@@ -38,6 +38,8 @@ const StyledLink = styled(Link)`
 `;
 
 const LogOut = styled.button`
+  margin: 0;
+  padding: 0;
   text-decoration: none;
   color: black;
   background-color: transparent;
@@ -52,30 +54,40 @@ const LogOut = styled.button`
 `;
 
 const NavBar = () => {
+  const { user, logout } = useUser();
+
   const handleLogOut = (e) => {
     e.preventDefault();
 
-    axios
-      .post("/api/auth/logout")
-      .then((result) => {
-        console.log(result.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    logout().catch((err) => {
+      console.log(err);
+    });
   };
 
-  return (
-    <NavBarContainer>
-      <Logo to="/">medley</Logo>
+  if (user) {
+    return (
+      <NavBarContainer>
+        <Logo to="/">medley</Logo>
 
-      <LinksContainer>
-        <StyledLink to="/login">Log In</StyledLink>
-        <StyledLink to="/signup">Sign Up</StyledLink>
-        <LogOut onClick={handleLogOut}>Log Out</LogOut>
-      </LinksContainer>
-    </NavBarContainer>
-  );
+        <LinksContainer>
+          <StyledLink to="/articles">Articles</StyledLink>
+          <StyledLink to="/feeds">Feeds</StyledLink>
+          <LogOut onClick={handleLogOut}>Log Out</LogOut>
+        </LinksContainer>
+      </NavBarContainer>
+    );
+  } else {
+    return (
+      <NavBarContainer>
+        <Logo to="/">medley</Logo>
+
+        <LinksContainer>
+          <StyledLink to="/signup">Sign Up</StyledLink>
+          <StyledLink to="/login">Log In</StyledLink>
+        </LinksContainer>
+      </NavBarContainer>
+    );
+  }
 };
 
 export default NavBar;
