@@ -1,4 +1,5 @@
-from flask import request, jsonify
+from datetime import timedelta
+from flask import request, jsonify, current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 from flask_restx import Namespace, Resource, fields
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -91,22 +92,6 @@ class LogOut(Resource):
         '''log out a user'''
         response = jsonify({'message': 'Logged out successfully'})
         unset_jwt_cookies(response)
-        response.status_code = 200
-
-        return response
-
-
-# refresh token route
-@auth_ns.route('/refresh')
-class Refresh(Resource):
-    @jwt_required(refresh=True)
-    def post(self):
-        '''refresh access token'''
-        current_user = get_jwt_identity()
-
-        new_access_token = create_access_token(identity=current_user)
-        response = jsonify({'message': 'Token refreshed'})
-        set_access_cookies(response, new_access_token)
         response.status_code = 200
 
         return response
