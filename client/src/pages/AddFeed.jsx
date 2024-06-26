@@ -1,7 +1,8 @@
+import axios from "axios";
 import styled from "styled-components";
 import Alert from "../components/Alert";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserHook";
 
 const PageContainer = styled.div`
@@ -13,7 +14,7 @@ const PageContainer = styled.div`
   font-family: "Arial", sans-serif;
 `;
 
-const LogInForm = styled.form`
+const AddFeedForm = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,43 +45,39 @@ const SubmitButton = styled.button`
   }
 `;
 
-const SignUpPrompt = styled.p`
-  margin-top: 20px;
-  font-size: 14px;
-`;
-
-const SignUpLink = styled(Link)`
-  text-decoration: none;
-  color: #ffb6c1;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const SignUp = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const AddFeed = () => {
+  const [title, setTitle] = useState("");
+  const [url, setURL] = useState("");
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
-  const { login } = useUser();
+  const navigate = useNavigate();
 
-  const handleLogIn = (e) => {
+  const { user } = useUser();
+
+  const handleAddFeed = (e) => {
     e.preventDefault();
 
-    const user = { username, password };
+    const newFeed = { title, url };
 
-    login(user).catch((err) => {
-      console.log(err.response.data.message);
-      setAlert(err.response.data.message);
-      setShowAlert(true);
-      setPassword("");
-    });
+    if (user) {
+      axios
+        .post(`/api/user/${user}/feeds`, newFeed, { withCredentials: true })
+        .then((res) => {
+          console.log(res.data);
+          navigate("/feeds");
+        })
+        .catch((err) => {
+          console.log(err);
+          setAlert(err.response.data.message);
+          setShowAlert(true);
+        });
+    }
   };
 
   return (
     <PageContainer>
-      <h2>Log In</h2>
+      <h2>Add Feed</h2>
 
       {showAlert && (
         <Alert
@@ -91,29 +88,25 @@ const SignUp = () => {
         />
       )}
 
-      <LogInForm>
+      <AddFeedForm>
         <FormInput
           type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        ></FormInput>
+          placeholder="Feed Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
         <FormInput
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        ></FormInput>
+          type="text"
+          placeholder="Feed Link"
+          value={url}
+          onChange={(e) => setURL(e.target.value)}
+        />
 
-        <SubmitButton onClick={handleLogIn}>Log In</SubmitButton>
-      </LogInForm>
-
-      <SignUpPrompt>
-        Don't have an account? <SignUpLink to="/signup">Create one</SignUpLink>
-      </SignUpPrompt>
+        <SubmitButton onClick={handleAddFeed}>Add</SubmitButton>
+      </AddFeedForm>
     </PageContainer>
   );
 };
 
-export default SignUp;
+export default AddFeed;

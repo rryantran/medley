@@ -9,7 +9,7 @@ const PageContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 70vh;
+  padding-top: 80px;
   font-family: "Arial", sans-serif;
 `;
 
