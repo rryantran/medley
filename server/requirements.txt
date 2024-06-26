@@ -31,6 +31,6 @@ rpds-py==0.18.1
 sgmllib3k==1.0.0
 SQLAlchemy==2.0.30
 typing_extensions==4.12.1
-urllib3==2.2.1
+urllib3==2.2.2
 Werkzeug==3.0.3
 xmltodict==0.13.0
