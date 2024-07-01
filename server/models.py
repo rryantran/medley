@@ -30,7 +30,7 @@ class Feed(db.Model):
     users = db.relationship('User', secondary=user_feed,
                             back_populates='feeds')
     articles = db.relationship(
-        'Article', back_populates='feed')
+        'Article', back_populates='feed', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Feed {self.title}>'
