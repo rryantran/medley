@@ -48,7 +48,12 @@ const Feed = ({ id, title, url, fetchFeeds }) => {
       </FeedContainer>
 
       <ButtonContainer>
-        <EditPopup />
+        <EditPopup
+          feed={id}
+          feedTitle={title}
+          feedURL={url}
+          fetchFeeds={fetchFeeds}
+        />
         <DeletePopup feed={id} title={title} fetchFeeds={fetchFeeds} />
       </ButtonContainer>
     </ComponentContainer>

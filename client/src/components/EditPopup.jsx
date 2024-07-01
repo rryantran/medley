@@ -4,9 +4,9 @@ import Popup from "reactjs-popup";
 import PopupAlert from "./PopupAlert";
 import { useState } from "react";
 import { useUser } from "../hooks/UserHook";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlinePencil } from "react-icons/hi";
 
-const TrashIcon = styled(HiOutlineTrash)`
+const EditIcon = styled(HiOutlinePencil)`
   color: #000000;
   font-size: 25px;
 
@@ -25,43 +25,32 @@ const StyledPopup = styled(Popup)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px 20px;
+    padding: 60px 20px;
     border-radius: 10px;
     font-family: "Arial", sans-serif;
     background-color: #ffffff;
   }
 `;
 
-const Title = styled.div`
-  display: inline;
-  color: #ffc0cb;
-`;
-
-const ButtonContainer = styled.div`
+const UpdateFeedForm = styled.form`
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 300px;
 `;
 
-const CancelButton = styled.button`
-  padding: 10px 0px;
-  width: 25%;
-  border: none;
+const FormInput = styled.input`
+  padding: 8px 5px;
+  width: 85%;
   border-radius: 5px;
-  background-color: #c0c0c0;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: bold;
-  &:hover {
-    background-color: #acacac;
-    cursor: pointer;
-  }
+  border: 1px solid #c0c0c0;
 `;
 
-const DeleteButton = styled.button`
-  padding: 10px 0px;
-  width: 25%;
+const SubmitButton = styled.button`
+  padding: 15px;
+  margin-top: 15px;
+  width: 50%;
   border: none;
   border-radius: 5px;
   background-color: #ffc0cb;
@@ -76,8 +65,8 @@ const DeleteButton = styled.button`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10px;
+  right: 10px;
   border: none;
   background-color: #00000000;
   font-size: 30px;
@@ -87,17 +76,23 @@ const CloseButton = styled.button`
   }
 `;
 
-const DeletePopup = ({ feed, title, fetchFeeds }) => {
-  const [open, setOpen] = useState(false);
+const EditPopup = ({ feed, feedTitle, feedURL, fetchFeeds }) => {
+  const [title, setTitle] = useState(feedTitle);
+  const [url, setURL] = useState(feedURL);
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const { user } = useUser();
 
-  const handleDelete = () => {
-    if (user) {
+  const handleEdit = (e) => {
+    e.preventDefault();
+
+    const updatedFeed = { title, url };
+
+    if (user && (title !== feedTitle || url !== feedURL)) {
       axios
-        .delete(`/api/user/${user}/feeds/${feed}`, {
+        .put(`/api/user/${user}/feeds/${feed}`, updatedFeed, {
           withCredentials: true,
         })
         .then((res) => {
@@ -115,13 +110,18 @@ const DeletePopup = ({ feed, title, fetchFeeds }) => {
 
   return (
     <>
-      <TrashIcon onClick={() => setOpen(true)} />
-      <StyledPopup open={open} onClose={() => setOpen(false)} modal={true}>
-        <CloseButton onClick={() => setOpen(false)}>&times;</CloseButton>
+      <EditIcon onClick={() => setOpen(true)} />
 
-        <h3>
-          Are you sure you want to delete <Title>{title}</Title>?
-        </h3>
+      <StyledPopup open={open} onClose={() => setOpen(false)} modal={true}>
+        <CloseButton
+          onClick={() => {
+            setOpen(false);
+          }}
+        >
+          &times;
+        </CloseButton>
+
+        <h2>Update Feed</h2>
 
         {showAlert && (
           <PopupAlert
@@ -132,13 +132,26 @@ const DeletePopup = ({ feed, title, fetchFeeds }) => {
           />
         )}
 
-        <ButtonContainer>
-          <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
-          <CancelButton onClick={() => setOpen(false)}>Cancel</CancelButton>
-        </ButtonContainer>
+        <UpdateFeedForm>
+          <FormInput
+            type="text"
+            placeholder="Feed Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
+          <FormInput
+            type="text"
+            placeholder="Feed Link"
+            value={url}
+            onChange={(e) => setURL(e.target.value)}
+          />
+
+          <SubmitButton onClick={handleEdit}>Update</SubmitButton>
+        </UpdateFeedForm>
       </StyledPopup>
     </>
   );
 };
 
-export default DeletePopup;
+export default EditPopup;

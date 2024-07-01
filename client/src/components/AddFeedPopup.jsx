@@ -90,7 +90,9 @@ const AddFeedPopup = ({ fetchFeeds }) => {
 
   const { user } = useUser();
 
-  const handleAddFeed = () => {
+  const handleAddFeed = (e) => {
+    e.preventDefault();
+
     const newFeed = { title, url };
 
     if (user) {
@@ -152,16 +154,7 @@ const AddFeedPopup = ({ fetchFeeds }) => {
             onChange={(e) => setURL(e.target.value)}
           />
 
-          <SubmitButton
-            onClick={(e) => {
-              e.preventDefault();
-              console.log("hi");
-              handleAddFeed();
-              close();
-            }}
-          >
-            Add
-          </SubmitButton>
+          <SubmitButton onClick={handleAddFeed}>Add</SubmitButton>
         </AddFeedForm>
       </StyledPopup>
     </>
