@@ -11,20 +11,20 @@ const AlertContainer = styled.div`
   background-color: #ffc0cb;
   color: #ffffff;
   font-family: Arial, sans-serif;
-  width: 35%;
+  width: 80%;
 `;
 
 const AlertButton = styled.button`
   border: none;
   background-color: #ffc0cb;
   color: #ffffff;
-  font-size: 30px;
+  font-size: 25px;
   &:hover {
     cursor: pointer;
   }
 `;
 
-const Alert = ({ message, clickHanlder }) => {
+const PopupAlert = ({ message, clickHanlder }) => {
   return (
     <AlertContainer>
       <div>{message}</div>
@@ -33,4 +33,4 @@ const Alert = ({ message, clickHanlder }) => {
   );
 };
 
-export default Alert;
+export default PopupAlert;

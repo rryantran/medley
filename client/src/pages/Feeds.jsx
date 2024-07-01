@@ -1,8 +1,8 @@
 import axios from "axios";
 import styled from "styled-components";
 import Feed from "../components/Feed";
+import AddFeedPopup from "../components/AddFeedPopup";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserHook";
 
 const PageContainer = styled.div`
@@ -24,22 +24,6 @@ const ButtonContainer = styled.div`
   width: 85%;
 `;
 
-const AddFeedButton = styled.button`
-  padding: 15px 0px;
-  margin: 0px 0px 15px;
-  width: 10%;
-  border: none;
-  border-radius: 5px;
-  background-color: #ffc0cb;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: bold;
-  &:hover {
-    background-color: #ffaeb9;
-    cursor: pointer;
-  }
-`;
-
 const FeedContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -50,8 +34,6 @@ const FeedContainer = styled.div`
 
 const Feeds = () => {
   const [feeds, setFeeds] = useState([]);
-
-  const navigate = useNavigate();
 
   const { user } = useUser();
 
@@ -69,14 +51,24 @@ const Feeds = () => {
     }
   }, [user]);
 
+  const fetchFeeds = () => {
+    axios
+      .get(`/api/user/${user}/feeds`)
+      .then((res) => {
+        console.log(res.data);
+        setFeeds(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <PageContainer>
       <Heading>Feeds</Heading>
 
       <ButtonContainer>
-        <AddFeedButton onClick={() => navigate("/addfeed")}>
-          Add Feed
-        </AddFeedButton>
+        <AddFeedPopup user={user} fetchFeeds={fetchFeeds} />
       </ButtonContainer>
 
       <FeedContainer>
