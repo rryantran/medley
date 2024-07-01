@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import EditPopup from "./EditPopup";
+import DeletePopup from "./DeletePopup";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 
 const ComponentContainer = styled.div`
@@ -34,38 +36,20 @@ const ButtonContainer = styled.div`
   gap: 15px;
 `;
 
-const EditIcon = styled(HiOutlinePencil)`
-  color: #000000;
-  font-size: 25px;
-
-  &:hover {
-    cursor: pointer;
-    color: #ffaeb9;
-  }
-`;
-
-const TrashIcon = styled(HiOutlineTrash)`
-  color: #000000;
-  font-size: 25px;
-
-  &:hover {
-    cursor: pointer;
-    color: #ffaeb9;
-  }
-`;
-
-const Feed = ({ title, url }) => {
+const Feed = ({ id, title, url, fetchFeeds }) => {
   return (
     <ComponentContainer>
       <FeedContainer>
         <FeedTitle>{title}</FeedTitle>
+
         <FeedLink href={url} target="_blank">
           {url}
         </FeedLink>
       </FeedContainer>
+
       <ButtonContainer>
-        <EditIcon />
-        <TrashIcon />
+        <EditPopup />
+        <DeletePopup feed={id} title={title} fetchFeeds={fetchFeeds} />
       </ButtonContainer>
     </ComponentContainer>
   );

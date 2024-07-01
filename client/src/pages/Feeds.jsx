@@ -68,12 +68,18 @@ const Feeds = () => {
       <Heading>Feeds</Heading>
 
       <ButtonContainer>
-        <AddFeedPopup user={user} fetchFeeds={fetchFeeds} />
+        <AddFeedPopup fetchFeeds={fetchFeeds} />
       </ButtonContainer>
 
       <FeedContainer>
         {feeds.map((feed) => (
-          <Feed key={feed.id} title={feed.title} url={feed.url} />
+          <Feed
+            key={feed.id}
+            id={feed.id}
+            title={feed.title}
+            url={feed.url}
+            fetchFeeds={fetchFeeds}
+          />
         ))}
       </FeedContainer>
     </PageContainer>

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Popup from "reactjs-popup";
 import PopupAlert from "./PopupAlert";
 import { useState } from "react";
+import { useUser } from "../hooks/UserHook";
 
 const AddFeedButton = styled.button`
   padding: 15px 0px;
@@ -30,6 +31,7 @@ const StyledPopup = styled(Popup)`
     justify-content: center;
     align-items: center;
     padding: 60px 20px;
+    border-radius: 10px;
     font-family: "Arial", sans-serif;
     background-color: #ffffff;
   }
@@ -79,12 +81,14 @@ const CloseButton = styled.button`
   }
 `;
 
-const AddFeedPopup = ({ user, fetchFeeds }) => {
+const AddFeedPopup = ({ fetchFeeds }) => {
   const [title, setTitle] = useState("");
   const [url, setURL] = useState("");
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const { user } = useUser();
 
   const handleAddFeed = () => {
     const newFeed = { title, url };
@@ -98,6 +102,8 @@ const AddFeedPopup = ({ user, fetchFeeds }) => {
           setOpen(false);
           setTitle("");
           setURL("");
+          setAlert("");
+          setShowAlert(false);
         })
         .catch((err) => {
           console.log(err);
@@ -111,7 +117,7 @@ const AddFeedPopup = ({ user, fetchFeeds }) => {
     <>
       <AddFeedButton onClick={() => setOpen(true)}>Add Feed</AddFeedButton>
 
-      <StyledPopup open={open} modal={true}>
+      <StyledPopup open={open} onClose={() => setOpen(false)} modal={true}>
         <CloseButton
           onClick={() => {
             setOpen(false);
