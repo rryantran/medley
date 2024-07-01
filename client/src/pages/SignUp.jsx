@@ -9,10 +9,7 @@ const PageContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 70vh;
-`;
-
-const Heading = styled.h2`
+  padding-top: 80px;
   font-family: "Arial", sans-serif;
 `;
 
@@ -49,7 +46,6 @@ const SubmitButton = styled.button`
 
 const LogInPrompt = styled.p`
   margin-top: 20px;
-  font-family: "Arial", sans-serif;
   font-size: 14px;
 `;
 
@@ -98,7 +94,7 @@ const SignUp = () => {
 
   return (
     <PageContainer>
-      <Heading>Sign Up</Heading>
+      <h2>Sign Up</h2>
 
       {showAlert && (
         <Alert

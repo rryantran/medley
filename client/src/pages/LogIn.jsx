@@ -9,10 +9,7 @@ const PageContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 60vh;
-`;
-
-const Heading = styled.h2`
+  padding-top: 80px;
   font-family: "Arial", sans-serif;
 `;
 
@@ -49,7 +46,6 @@ const SubmitButton = styled.button`
 
 const SignUpPrompt = styled.p`
   margin-top: 20px;
-  font-family: "Arial", sans-serif;
   font-size: 14px;
 `;
 
@@ -72,10 +68,7 @@ const SignUp = () => {
   const handleLogIn = (e) => {
     e.preventDefault();
 
-    const user = {
-      username: username,
-      password: password,
-    };
+    const user = { username, password };
 
     login(user).catch((err) => {
       console.log(err.response.data.message);
@@ -87,7 +80,7 @@ const SignUp = () => {
 
   return (
     <PageContainer>
-      <Heading>Log In</Heading>
+      <h2>Log In</h2>
 
       {showAlert && (
         <Alert

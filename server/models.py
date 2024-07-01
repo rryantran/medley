@@ -30,10 +30,15 @@ class Feed(db.Model):
     users = db.relationship('User', secondary=user_feed,
                             back_populates='feeds')
     articles = db.relationship(
-        'Article', back_populates='feed')
+        'Article', back_populates='feed', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Feed {self.title}>'
+
+    def update(self, title, url):
+        self.title = title
+        self.url = url
+        db.session.commit()
 
     def delete(self):
         db.session.delete(self)

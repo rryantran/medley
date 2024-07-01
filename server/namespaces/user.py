@@ -67,6 +67,9 @@ class UserFeeds(Resource):
         '''add a new feed for a user'''
         data = request.get_json()
 
+        if not data['title'] or not data['url']:
+            return {'message': 'All fields are required'}, 400
+
         user = db.session.execute(
             db.select(User).filter_by(id=user_id)).scalar()
         feed_exists = db.session.execute(
@@ -90,6 +93,28 @@ class UserFeeds(Resource):
 
 @user_ns.route('/<int:user_id>/feeds/<int:feed_id>')
 class UserFeed(Resource):
+    @jwt_required()
+    def put(self, user_id, feed_id):
+        '''update a feed for a user'''
+        data = request.get_json()
+
+        user = db.session.execute(
+            db.select(User).filter_by(id=user_id)).scalar()
+        feed = db.session.execute(
+            db.select(Feed).filter_by(id=feed_id)).scalar()
+
+        if not user:
+            return {'message': 'User not found'}, 404
+        if not feed:
+            return {'message': 'Feed not found'}, 404
+
+        if not data['title'] or not data['url']:
+            return {'message': 'All fields are required'}, 400
+
+        feed.update(data['title'], data['url'])
+
+        return {'message': 'Feed updated'}, 200
+
     @jwt_required()
     def delete(self, user_id, feed_id):
         '''delete a feed for a user'''
