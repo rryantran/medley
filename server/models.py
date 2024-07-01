@@ -35,6 +35,11 @@ class Feed(db.Model):
     def __repr__(self):
         return f'<Feed {self.title}>'
 
+    def update(self, title, url):
+        self.title = title
+        self.url = url
+        db.session.commit()
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
