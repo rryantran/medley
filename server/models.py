@@ -52,6 +52,7 @@ class Article(db.Model):
     author = db.Column(db.String(128), nullable=False)
     pub_date = db.Column(db.DateTime, nullable=False)
     url = db.Column(db.String(512), unique=True, nullable=False)
+    source = db.Column(db.String(128), nullable=False)
     feed = db.relationship('Feed', back_populates='articles')
     feed_id = db.Column(db.Integer, db.ForeignKey('feed.id'), nullable=False)
 
