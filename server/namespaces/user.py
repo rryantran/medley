@@ -1,11 +1,12 @@
 from datetime import datetime
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import joinedload
 from flask_restx import Namespace, Resource, fields
 from dotenv import load_dotenv
 from feedparser import parse
 from exts import db
-from models import User, Feed, Article
+from models import User, Feed, UserFeed, Article
 
 # load environment variables
 load_dotenv("../.env")
@@ -48,7 +49,7 @@ class CurrentUser(Resource):
 
 
 @user_ns.route('/<int:user_id>/feeds')
-class UserFeeds(Resource):
+class CurrentUserFeeds(Resource):
     @jwt_required()
     @user_ns.marshal_with(feed_model)
     def get(self, user_id):
@@ -59,7 +60,22 @@ class UserFeeds(Resource):
         if not user:
             return 404
 
-        return user.feeds, 200
+        user_feeds = db.session.execute(
+            db.select(UserFeed)
+            .options(joinedload(UserFeed.feed))
+            .filter_by(user_id=user.id)
+        ).scalars().all()
+
+        feeds = [
+            {
+                'id': user_feed.feed.id,
+                'title': user_feed.title,
+                'url': user_feed.feed.url
+            }
+            for user_feed in user_feeds
+        ]
+
+        return feeds, 200
 
     @jwt_required()
     @user_ns.expect(feed_model)
@@ -72,27 +88,30 @@ class UserFeeds(Resource):
 
         user = db.session.execute(
             db.select(User).filter_by(id=user_id)).scalar()
-        feed_exists = db.session.execute(
+        feed = db.session.execute(
             db.select(Feed).filter_by(url=data['url'])).scalar()
 
         if not user:
             return {'message': 'User not found'}, 404
-        if feed_exists:
+        if not feed:
+            feed = Feed(url=data['url'])
+            feed.save()
+
+        user_feed = db.session.execute(db.select(UserFeed).filter_by(
+            user_id=user_id, feed_id=feed.id)).scalar()
+
+        if user_feed:
             return {'message': 'Feed already exists'}, 400
 
-        new_feed = Feed(
-            title=data['title'],
-            url=data['url']
-        )
-
-        user.feeds.append(new_feed)
-        db.session.commit()
+        new_user_feed = UserFeed(
+            title=data['title'], user_id=user.id, feed_id=feed.id)
+        new_user_feed.save()
 
         return {'message': 'Feed added'}, 201
 
 
 @user_ns.route('/<int:user_id>/feeds/<int:feed_id>')
-class UserFeed(Resource):
+class CurrentUserFeed(Resource):
     @jwt_required()
     def put(self, user_id, feed_id):
         '''update a feed for a user'''
@@ -102,16 +121,21 @@ class UserFeed(Resource):
             db.select(User).filter_by(id=user_id)).scalar()
         feed = db.session.execute(
             db.select(Feed).filter_by(id=feed_id)).scalar()
+        user_feed = db.session.execute(db.select(UserFeed).filter_by(
+            user_id=user_id, feed_id=feed_id)).scalar()
 
         if not user:
             return {'message': 'User not found'}, 404
         if not feed:
             return {'message': 'Feed not found'}, 404
+        if not user_feed:
+            return {'message': 'Feed not found'}, 404
 
         if not data['title'] or not data['url']:
             return {'message': 'All fields are required'}, 400
 
-        feed.update(data['title'], data['url'])
+        user_feed.update(data['title'])
+        feed.update(data['url'])
 
         return {'message': 'Feed updated'}, 200
 
@@ -122,14 +146,19 @@ class UserFeed(Resource):
             db.select(User).filter_by(id=user_id)).scalar()
         feed = db.session.execute(
             db.select(Feed).filter_by(id=feed_id)).scalar()
+        user_feed = db.session.execute(db.select(UserFeed).filter_by(
+            user_id=user_id, feed_id=feed_id)).scalar()
 
         if not user:
             return {'message': 'User not found'}, 404
         if not feed:
             return {'message': 'Feed not found'}, 404
+        if not user_feed:
+            return {'message': 'Feed not found'}, 404
 
-        if feed in user.feeds:
-            user.feeds.remove(feed)
+        if user_feed in user.feeds:
+            user.feeds.remove(user_feed)
+            user_feed.delete()
             if not feed.users:
                 feed.delete()
 
@@ -137,7 +166,7 @@ class UserFeed(Resource):
 
 
 @user_ns.route('/<int:user_id>/articles')
-class UserArticles(Resource):
+class CurrentUserArticles(Resource):
     @jwt_required()
     @user_ns.marshal_with(article_model)
     def get(self, user_id):
