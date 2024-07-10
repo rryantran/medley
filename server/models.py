@@ -21,8 +21,10 @@ class User(db.Model):
 class Feed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(512), unique=True, nullable=False)
-    users = db.relationship('UserFeed', back_populates='feed')
-    articles = db.relationship('Article', back_populates='feed')
+    users = db.relationship(
+        'UserFeed', back_populates='feed', cascade='all, delete-orphan')
+    articles = db.relationship(
+        'Article', back_populates='feed', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Feed {self.url}>'
