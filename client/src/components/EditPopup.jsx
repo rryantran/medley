@@ -76,9 +76,9 @@ const CloseButton = styled.button`
   }
 `;
 
-const EditPopup = ({ feed, feedTitle, feedURL, fetchFeeds }) => {
-  const [title, setTitle] = useState(feedTitle);
-  const [url, setURL] = useState(feedURL);
+const EditPopup = ({ feed, fetchFeeds }) => {
+  const [title, setTitle] = useState(feed.title);
+  const [url, setURL] = useState(feed.url);
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [open, setOpen] = useState(false);
@@ -90,9 +90,9 @@ const EditPopup = ({ feed, feedTitle, feedURL, fetchFeeds }) => {
 
     const updatedFeed = { title, url };
 
-    if (user && (title !== feedTitle || url !== feedURL)) {
+    if (user && (title !== feed.title || url !== feed.url)) {
       axios
-        .put(`/api/user/${user}/feeds/${feed}`, updatedFeed, {
+        .put(`/api/user/${user}/feeds/${feed.id}`, updatedFeed, {
           withCredentials: true,
         })
         .then((res) => {
