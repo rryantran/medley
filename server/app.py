@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_restx import Api
 from config import DevConfig
 from exts import db
-from models import User, Feed, Article
+from models import User, Feed, UserFeed, Article
 from namespaces.auth import auth_ns
 from namespaces.user import user_ns
 
@@ -50,6 +50,6 @@ def create_app(config=DevConfig):
     # shell context
     @app.shell_context_processor
     def make_shell_context():
-        return {'db': db, 'User': User, 'Feed': Feed, 'Article': Article}
+        return {'db': db, 'User': User, 'Feed': Feed, 'UserFeed': UserFeed, 'Article': Article}
 
     return app
