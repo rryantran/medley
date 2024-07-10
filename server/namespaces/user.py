@@ -36,6 +36,7 @@ article_model = user_ns.model('Article', {
     'title': fields.String(),
     'author': fields.String(),
     'pub_date': fields.DateTime(),
+    'source': fields.String(),
     'url': fields.String(),
 })
 
