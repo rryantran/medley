@@ -78,3 +78,7 @@ class Article(db.Model):
 
     def __repr__(self):
         return f'<Article {self.title}>'
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

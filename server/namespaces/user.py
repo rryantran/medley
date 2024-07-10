@@ -177,12 +177,19 @@ class CurrentUserArticles(Resource):
         if not user:
             return {'message': 'User not found'}, 404
 
-        all_articles = []
+        user_feeds = db.session.execute(
+            db.select(UserFeed)
+            .options(joinedload(UserFeed.feed))
+            .filter_by(user_id=user.id)
+        ).scalars().all()
 
-        for feed in user.feeds:
-            all_articles.extend(feed.articles)
+        articles = db.session.execute(
+            db.select(Article)
+            .options(joinedload(Article.feed))
+            .filter(Article.feed_id.in_([feed.feed.id for feed in user_feeds]))
+        ).scalars().all()
 
-        return all_articles, 200
+        return articles, 200
 
     @jwt_required()
     def put(self, user_id):
@@ -193,29 +200,30 @@ class CurrentUserArticles(Resource):
         if not user:
             return {'message': 'User not found'}, 404
 
-        for feed in user.feeds:
-            parsed = parse(feed.url)
-            new_articles = []
+        user_feeds = db.session.execute(
+            db.select(UserFeed)
+            .options(joinedload(UserFeed.feed))
+            .filter_by(user_id=user.id)
+        ).scalars().all()
 
-            for entry in parsed.entries:
-                article_exists = db.session.execute(
+        for feed in user_feeds:
+            parsed_feed = parse(feed.feed.url)
+            for entry in parsed_feed.entries:
+                article = db.session.execute(
                     db.select(Article).filter_by(url=entry.link)).scalar()
 
-                if not article_exists:
+                if not article:
                     new_article = Article(
                         title=entry.title,
                         author=entry.author,
                         pub_date=datetime.strptime(
                             entry.published, '%a, %d %b %Y %H:%M:%S %z'),
-                        url=entry.link
+                        url=entry.link,
+                        source=feed.title,
+                        feed_id=feed.feed.id
                     )
-
-                    new_articles.append(new_article)
+                    new_article.save()
                 else:
                     break
-
-            if new_articles:
-                feed.articles.extend(new_articles)
-                db.session.commit()
 
         return {'message': 'Articles updated'}, 200
