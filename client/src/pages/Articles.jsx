@@ -1,6 +1,24 @@
 import axios from "axios";
+import styled from "styled-components";
+import Article from "../components/Article";
 import { useState, useEffect } from "react";
 import { useUser } from "../hooks/UserHook";
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px;
+`;
+
+const ArticleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+`;
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
@@ -10,10 +28,12 @@ const Articles = () => {
   useEffect(() => {
     if (user) {
       axios
-        .get(`/api/user/${user}/articles`)
+        .put(`/api/user/${user}/articles`)
         .then((res) => {
-          console.log(res.data);
-          setArticles(res.data);
+          axios.get(`/api/user/${user}/articles`).then((res) => {
+            console.log(res.data);
+            setArticles(res.data);
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -22,9 +42,15 @@ const Articles = () => {
   }, [user]);
 
   return (
-    <div>
-      <h1>Articles</h1>
-    </div>
+    <PageContainer>
+      <h2>Articles</h2>
+
+      <ArticleContainer>
+        {articles.map((article) => (
+          <Article key={article.id} article={article} />
+        ))}
+      </ArticleContainer>
+    </PageContainer>
   );
 };
 
