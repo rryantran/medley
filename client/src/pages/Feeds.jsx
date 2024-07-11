@@ -11,7 +11,6 @@ const PageContainer = styled.div`
   justify-content: center;
   align-items: center;
   padding-top: 15px;
-  font-family: "Arial", sans-serif;
 `;
 
 const Heading = styled.h2`

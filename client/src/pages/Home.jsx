@@ -6,7 +6,6 @@ const PageContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 60vh;
-  font-family: "Arial", sans-serif;
 `;
 
 const Slogan = styled.h2`

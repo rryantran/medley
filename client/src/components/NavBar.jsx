@@ -6,10 +6,14 @@ const NavBarContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   margin: 0;
   padding: 25px 100px;
+  box-sizing: border-box;
+  position: fixed;
   border-bottom: 1px solid #c0c0c0;
   font-family: Arial, sans-serif;
+  background-color: #ffffff;
 `;
 
 const Logo = styled(Link)`
