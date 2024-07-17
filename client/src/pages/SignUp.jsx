@@ -10,7 +10,6 @@ const PageContainer = styled.div`
   justify-content: center;
   align-items: center;
   padding-top: 80px;
-  font-family: "Arial", sans-serif;
 `;
 
 const SignUpForm = styled.form`

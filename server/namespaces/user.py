@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import request
+from flask import request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
 from flask_restx import Namespace, Resource, fields
@@ -36,6 +36,7 @@ article_model = user_ns.model('Article', {
     'title': fields.String(),
     'author': fields.String(),
     'pub_date': fields.DateTime(),
+    'source': fields.String(),
     'url': fields.String(),
 })
 
@@ -189,7 +190,20 @@ class CurrentUserArticles(Resource):
             .filter(Article.feed_id.in_([feed.feed.id for feed in user_feeds]))
         ).scalars().all()
 
-        return articles, 200
+        return_articles = [
+            {
+                'id': article.id,
+                'title': article.title,
+                'author': article.author,
+                'pub_date': article.pub_date,
+                'source': [
+                    user_feeds.title for user_feeds in article.userfeeds if user_feeds.user_id == user_id][0],
+                'url': article.url
+            }
+            for article in articles
+        ]
+
+        return return_articles, 200
 
     @jwt_required()
     def put(self, user_id):
@@ -208,6 +222,7 @@ class CurrentUserArticles(Resource):
 
         for feed in user_feeds:
             parsed_feed = parse(feed.feed.url)
+
             for entry in parsed_feed.entries:
                 article = db.session.execute(
                     db.select(Article).filter_by(url=entry.link)).scalar()
@@ -219,11 +234,15 @@ class CurrentUserArticles(Resource):
                         pub_date=datetime.strptime(
                             entry.published, '%a, %d %b %Y %H:%M:%S %z'),
                         url=entry.link,
-                        source=feed.title,
                         feed_id=feed.feed.id
                     )
+
+                    new_article.userfeeds.append(feed)
+
                     new_article.save()
                 else:
-                    break
+                    if feed not in article.userfeeds:
+                        article.userfeeds.append(feed)
+                        article.save()
 
         return {'message': 'Articles updated'}, 200

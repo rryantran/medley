@@ -87,7 +87,7 @@ const CloseButton = styled.button`
   }
 `;
 
-const DeletePopup = ({ feed, title, fetchFeeds }) => {
+const DeletePopup = ({ feed, fetchFeeds }) => {
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -97,7 +97,7 @@ const DeletePopup = ({ feed, title, fetchFeeds }) => {
   const handleDelete = () => {
     if (user) {
       axios
-        .delete(`/api/user/${user}/feeds/${feed}`, {
+        .delete(`/api/user/${user}/feeds/${feed.id}`, {
           withCredentials: true,
         })
         .then((res) => {
@@ -120,7 +120,7 @@ const DeletePopup = ({ feed, title, fetchFeeds }) => {
         <CloseButton onClick={() => setOpen(false)}>&times;</CloseButton>
 
         <h3>
-          Are you sure you want to delete <Title>{title}</Title>?
+          Are you sure you want to delete <Title>{feed.title}</Title>?
         </h3>
 
         {showAlert && (

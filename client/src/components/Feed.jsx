@@ -36,25 +36,20 @@ const ButtonContainer = styled.div`
   gap: 15px;
 `;
 
-const Feed = ({ id, title, url, fetchFeeds }) => {
+const Feed = ({ feed, fetchFeeds }) => {
   return (
     <ComponentContainer>
       <FeedContainer>
-        <FeedTitle>{title}</FeedTitle>
+        <FeedTitle>{feed.title}</FeedTitle>
 
-        <FeedLink href={url} target="_blank">
-          {url}
+        <FeedLink href={feed.url} target="_blank">
+          {feed.url}
         </FeedLink>
       </FeedContainer>
 
       <ButtonContainer>
-        <EditPopup
-          feed={id}
-          feedTitle={title}
-          feedURL={url}
-          fetchFeeds={fetchFeeds}
-        />
-        <DeletePopup feed={id} title={title} fetchFeeds={fetchFeeds} />
+        <EditPopup feed={feed} fetchFeeds={fetchFeeds} />
+        <DeletePopup feed={feed} fetchFeeds={fetchFeeds} />
       </ButtonContainer>
     </ComponentContainer>
   );

@@ -1,5 +1,13 @@
 from exts import db
 
+# article-user-feed association table
+article_userfeed = db.Table('article_userfeed',
+                            db.Column('article_id', db.Integer, db.ForeignKey(
+                                'article.id'), primary_key=True),
+                            db.Column('userfeed_id', db.Integer, db.ForeignKey(
+                                'user_feed.id'), primary_key=True)
+                            )
+
 
 # user model
 class User(db.Model):
@@ -21,8 +29,10 @@ class User(db.Model):
 class Feed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(512), unique=True, nullable=False)
-    users = db.relationship('UserFeed', back_populates='feed')
-    articles = db.relationship('Article', back_populates='feed')
+    users = db.relationship(
+        'UserFeed', back_populates='feed', cascade='all, delete-orphan')
+    articles = db.relationship(
+        'Article', back_populates='feed', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Feed {self.url}>'
@@ -48,6 +58,8 @@ class UserFeed(db.Model):
     feed_id = db.Column(db.Integer, db.ForeignKey('feed.id'), nullable=False)
     user = db.relationship('User', back_populates='feeds')
     feed = db.relationship('Feed', back_populates='users')
+    articles = db.relationship(
+        'Article', secondary=article_userfeed, back_populates='userfeeds')
 
     def __repr__(self):
         return f'<UserFeed {self.title}>'
@@ -72,9 +84,10 @@ class Article(db.Model):
     author = db.Column(db.String(128), nullable=False)
     pub_date = db.Column(db.DateTime, nullable=False)
     url = db.Column(db.String(512), unique=True, nullable=False)
-    source = db.Column(db.String(128), nullable=False)
     feed_id = db.Column(db.Integer, db.ForeignKey('feed.id'), nullable=False)
     feed = db.relationship('Feed', back_populates='articles')
+    userfeeds = db.relationship(
+        'UserFeed', secondary=article_userfeed, back_populates='articles')
 
     def __repr__(self):
         return f'<Article {self.title}>'

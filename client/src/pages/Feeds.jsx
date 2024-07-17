@@ -11,7 +11,6 @@ const PageContainer = styled.div`
   justify-content: center;
   align-items: center;
   padding-top: 15px;
-  font-family: "Arial", sans-serif;
 `;
 
 const Heading = styled.h2`
@@ -73,13 +72,7 @@ const Feeds = () => {
 
       <FeedContainer>
         {feeds.map((feed) => (
-          <Feed
-            key={feed.id}
-            id={feed.id}
-            title={feed.title}
-            url={feed.url}
-            fetchFeeds={fetchFeeds}
-          />
+          <Feed key={feed.id} feed={feed} fetchFeeds={fetchFeeds} />
         ))}
       </FeedContainer>
     </PageContainer>
