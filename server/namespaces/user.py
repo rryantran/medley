@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import request, current_app
+from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
 from flask_restx import Namespace, Resource, fields
