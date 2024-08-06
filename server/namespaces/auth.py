@@ -1,6 +1,5 @@
-from datetime import timedelta
-from flask import request, jsonify, current_app
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+from flask import request, jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 from flask_restx import Namespace, Resource, fields
 from werkzeug.security import generate_password_hash, check_password_hash
 from exts import db
