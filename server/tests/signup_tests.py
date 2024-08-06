@@ -19,6 +19,17 @@ def app():
 
 
 @pytest.fixture
+def mock_user():
+    mock_user = User(username='mock_user', email='mock_user@mail.com',
+                     password=generate_password_hash('password'))
+
+    db.session.add(mock_user)
+    db.session.commit()
+
+    return mock_user
+
+
+@pytest.fixture
 def client(app):
     client = app.test_client()
 
@@ -26,7 +37,7 @@ def client(app):
 
 
 def test_missing_username(client):
-    json = {'username': '', 'email': 'test_user@mail.com',
+    json = {'username': '', 'email': 'mock_user@mail.com',
             'password': 'password', 'confirm_password': 'password'}
 
     response = client.post('/auth/signup', json=json)
@@ -36,7 +47,7 @@ def test_missing_username(client):
 
 
 def test_missing_email(client):
-    json = {'username': 'test_user', 'email': '',
+    json = {'username': 'mock_user', 'email': '',
             'password': 'password', 'confirm_password': 'password'}
 
     response = client.post('/auth/signup', json=json)
@@ -46,7 +57,7 @@ def test_missing_email(client):
 
 
 def test_missing_password(client):
-    json = {'username': 'test_user', 'email': 'test_user@mail.com',
+    json = {'username': 'mock_user', 'email': 'mock_user@mail.com',
             'password': '', 'confirm_password': 'password'}
 
     response = client.post('/auth/signup', json=json)
@@ -56,7 +67,7 @@ def test_missing_password(client):
 
 
 def test_missing_confirm_password(client):
-    json = {'username': 'test_user', 'email': 'test_user@mail.com',
+    json = {'username': 'mock_user', 'email': 'mock_user@mail.com',
             'password': 'password', 'confirm_password': ''}
 
     response = client.post('/auth/signup', json=json)
@@ -66,7 +77,7 @@ def test_missing_confirm_password(client):
 
 
 def test_passwords_not_matching(client):
-    json = {'username': 'test_user', 'email': 'test_user@mail.com',
+    json = {'username': 'mock_user', 'email': 'mock_user@mail.com',
             'password': 'password1', 'confirm_password': 'password2'}
 
     response = client.post('/auth/signup', json=json)
@@ -75,14 +86,8 @@ def test_passwords_not_matching(client):
     assert response.get_json()['message'] == 'Passwords do not match'
 
 
-def test_username_exists(client):
-    user = User(username='test_user', email='user@mail.com',
-                password=generate_password_hash('password'))
-
-    db.session.add(user)
-    db.session.commit()
-
-    json = {'username': 'test_user', 'email': 'test_user@mail.com',
+def test_username_exists(client, mock_user):
+    json = {'username': 'mock_user', 'email': 'user@mail.com',
             'password': 'password', 'confirm_password': 'password'}
 
     response = client.post('/auth/signup', json=json)
@@ -91,14 +96,8 @@ def test_username_exists(client):
     assert response.get_json()['message'] == 'Username is already in use'
 
 
-def test_email_exists(client):
-    user = User(username='test_user', email='test_user@mail.com',
-                password=generate_password_hash('password'))
-
-    db.session.add(user)
-    db.session.commit()
-
-    json = {'username': 'user', 'email': 'test_user@mail.com',
+def test_email_exists(client, mock_user):
+    json = {'username': 'user', 'email': 'mock_user@mail.com',
             'password': 'password', 'confirm_password': 'password'}
 
     response = client.post('/auth/signup', json=json)
@@ -108,7 +107,7 @@ def test_email_exists(client):
 
 
 def test_valid_signup(client):
-    json = {'username': 'test_user', 'email': 'test_user@mail.com',
+    json = {'username': 'mock_user', 'email': 'mock_user@mail.com',
             'password': 'password', 'confirm_password': 'password'}
 
     response = client.post('/auth/signup', json=json)
