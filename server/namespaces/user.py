@@ -46,6 +46,7 @@ class CurrentUser(Resource):
     @jwt_required()
     def get(self):
         user = get_jwt_identity()
+
         return {'user': user}, 200
 
 
@@ -59,7 +60,7 @@ class CurrentUserFeeds(Resource):
             db.select(User).filter_by(id=user_id)).scalar()
 
         if not user:
-            return 404
+            return {'message': 'User not found'}, 404
 
         user_feeds = db.session.execute(
             db.select(UserFeed)
@@ -89,14 +90,17 @@ class CurrentUserFeeds(Resource):
 
         user = db.session.execute(
             db.select(User).filter_by(id=user_id)).scalar()
-        feed = db.session.execute(
-            db.select(Feed).filter_by(url=data['url'])).scalar()
 
         if not user:
             return {'message': 'User not found'}, 404
+
+        feed = db.session.execute(
+            db.select(Feed).filter_by(url=data['url'])).scalar()
+
         if not feed:
             feed = Feed(url=data['url'])
-            feed.save()
+            db.session.add(feed)
+            db.session.commit()
 
         user_feed = db.session.execute(db.select(UserFeed).filter_by(
             user_id=user_id, feed_id=feed.id)).scalar()
@@ -106,7 +110,8 @@ class CurrentUserFeeds(Resource):
 
         new_user_feed = UserFeed(
             title=data['title'], user_id=user.id, feed_id=feed.id)
-        new_user_feed.save()
+        db.session.add(new_user_feed)
+        db.session.commit()
 
         return {'message': 'Feed added'}, 201
 
@@ -120,23 +125,32 @@ class CurrentUserFeed(Resource):
 
         user = db.session.execute(
             db.select(User).filter_by(id=user_id)).scalar()
-        feed = db.session.execute(
-            db.select(Feed).filter_by(id=feed_id)).scalar()
-        user_feed = db.session.execute(db.select(UserFeed).filter_by(
-            user_id=user_id, feed_id=feed_id)).scalar()
 
         if not user:
             return {'message': 'User not found'}, 404
+
+        feed = db.session.execute(
+            db.select(Feed).filter_by(id=feed_id)).scalar()
+
         if not feed:
             return {'message': 'Feed not found'}, 404
+
+        user_feed = db.session.execute(db.select(UserFeed).filter_by(
+            user_id=user_id, feed_id=feed_id)).scalar()
+
         if not user_feed:
             return {'message': 'Feed not found'}, 404
 
         if not data['title'] or not data['url']:
             return {'message': 'All fields are required'}, 400
 
-        user_feed.update(data['title'])
-        feed.update(data['url'])
+        if parse(data['url']).bozo:
+            return {'message': 'Invalid feed url'}, 400
+
+        user_feed.title = data['title']
+        feed.url = data['url']
+
+        db.session.commit()
 
         return {'message': 'Feed updated'}, 200
 
@@ -145,23 +159,38 @@ class CurrentUserFeed(Resource):
         '''delete a feed for a user'''
         user = db.session.execute(
             db.select(User).filter_by(id=user_id)).scalar()
-        feed = db.session.execute(
-            db.select(Feed).filter_by(id=feed_id)).scalar()
-        user_feed = db.session.execute(db.select(UserFeed).filter_by(
-            user_id=user_id, feed_id=feed_id)).scalar()
 
         if not user:
             return {'message': 'User not found'}, 404
+
+        feed = db.session.execute(
+            db.select(Feed).filter_by(id=feed_id)).scalar()
+
         if not feed:
             return {'message': 'Feed not found'}, 404
-        if not user_feed:
-            return {'message': 'Feed not found'}, 404
+
+        user_feed = db.session.execute(db.select(UserFeed).filter_by(
+            user_id=user_id, feed_id=feed_id)).scalar()
+
+        articles_to_delete = db.session.execute(
+            db.select(Article).filter_by(feed_id=feed_id).filter(
+                Article.userfeeds.any(user_id=user_id))
+        ).scalars().all()
+
+        for article in articles_to_delete:
+            article.userfeeds.remove(user_feed)
+
+            if not article.userfeeds:
+                db.session.delete(article)
 
         if user_feed in user.feeds:
             user.feeds.remove(user_feed)
-            user_feed.delete()
+            db.session.delete(user_feed)
+
             if not feed.users:
-                feed.delete()
+                db.session.delete(feed)
+
+        db.session.commit()
 
         return {'message': 'Feed deleted'}, 200
 
@@ -220,8 +249,8 @@ class CurrentUserArticles(Resource):
             .filter_by(user_id=user.id)
         ).scalars().all()
 
-        for feed in user_feeds:
-            parsed_feed = parse(feed.feed.url)
+        for user_feed in user_feeds:
+            parsed_feed = parse(user_feed.feed.url)
 
             for entry in parsed_feed.entries:
                 article = db.session.execute(
@@ -234,15 +263,15 @@ class CurrentUserArticles(Resource):
                         pub_date=datetime.strptime(
                             entry.published, '%a, %d %b %Y %H:%M:%S %z'),
                         url=entry.link,
-                        feed_id=feed.feed.id
+                        feed_id=user_feed.feed.id
                     )
 
-                    new_article.userfeeds.append(feed)
-
-                    new_article.save()
+                    new_article.userfeeds.append(user_feed)
+                    db.session.add(new_article)
                 else:
-                    if feed not in article.userfeeds:
-                        article.userfeeds.append(feed)
-                        article.save()
+                    if user_feed not in article.userfeeds:
+                        article.userfeeds.append(user_feed)
+
+        db.session.commit()
 
         return {'message': 'Articles updated'}, 200

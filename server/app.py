@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
-from flask import Flask, current_app, jsonify
-from flask_jwt_extended import JWTManager, get_jwt, verify_jwt_in_request, get_jwt_identity, create_access_token, set_access_cookies
+from flask import Flask, jsonify
+from flask_jwt_extended import JWTManager, get_jwt, get_jwt_identity, create_access_token, set_access_cookies
 from flask_migrate import Migrate
 from flask_restx import Api
 from config import DevConfig

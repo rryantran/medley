@@ -162,3 +162,4 @@ cython_debug/
 # misc
 .flaskenv
 dev.db
+test.db
