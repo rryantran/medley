@@ -20,34 +20,18 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
 
 # feed model
 class Feed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(512), unique=True, nullable=False)
     users = db.relationship(
-        'UserFeed', back_populates='feed', cascade='all, delete-orphan')
+        'UserFeed', back_populates='feed')
     articles = db.relationship(
-        'Article', back_populates='feed', cascade='all, delete-orphan')
+        'Article', back_populates='feed')
 
     def __repr__(self):
         return f'<Feed {self.url}>'
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self, url):
-        self.url = url
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
 
 # user-feed model
@@ -64,18 +48,6 @@ class UserFeed(db.Model):
     def __repr__(self):
         return f'<UserFeed {self.title}>'
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self, title):
-        self.title = title
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
 
 # article model
 class Article(db.Model):
@@ -91,7 +63,3 @@ class Article(db.Model):
 
     def __repr__(self):
         return f'<Article {self.title}>'
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()

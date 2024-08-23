@@ -53,7 +53,8 @@ class SignUp(Resource):
             password=generate_password_hash(data['password'])
         )
 
-        new_user.save()
+        db.session.add(new_user)
+        db.session.commit()
 
         return {'message': 'User created successfully'}, 201
 
