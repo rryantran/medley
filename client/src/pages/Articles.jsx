@@ -22,6 +22,7 @@ const ArticleContainer = styled.div`
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { user } = useUser();
 
@@ -33,6 +34,7 @@ const Articles = () => {
           axios.get(`/api/user/${user}/articles`).then((res) => {
             console.log(res.data);
             setArticles(res.data);
+            setLoading(false);
           });
         })
         .catch((err) => {
@@ -44,6 +46,8 @@ const Articles = () => {
   return (
     <PageContainer>
       <h2>Articles</h2>
+
+      {loading ? <h3>Fetching your articles...</h3> : ""}
 
       <ArticleContainer>
         {articles.map((article) => (
