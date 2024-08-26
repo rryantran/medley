@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import request, current_app
+from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
 from flask_restx import Namespace, Resource, fields
@@ -41,6 +41,7 @@ article_model = user_ns.model('Article', {
 })
 
 
+# current user route
 @user_ns.route('/current')
 class CurrentUser(Resource):
     @jwt_required()
@@ -50,6 +51,7 @@ class CurrentUser(Resource):
         return {'user': user}, 200
 
 
+# current user's feeds route
 @user_ns.route('/<int:user_id>/feeds')
 class CurrentUserFeeds(Resource):
     @jwt_required()
@@ -110,12 +112,14 @@ class CurrentUserFeeds(Resource):
 
         new_user_feed = UserFeed(
             title=data['title'], user_id=user.id, feed_id=feed.id)
+
         db.session.add(new_user_feed)
         db.session.commit()
 
         return {'message': 'Feed added'}, 201
 
 
+# current user's feed route
 @user_ns.route('/<int:user_id>/feeds/<int:feed_id>')
 class CurrentUserFeed(Resource):
     @jwt_required()
@@ -195,6 +199,7 @@ class CurrentUserFeed(Resource):
         return {'message': 'Feed deleted'}, 200
 
 
+# current user's articles route
 @user_ns.route('/<int:user_id>/articles')
 class CurrentUserArticles(Resource):
     @jwt_required()

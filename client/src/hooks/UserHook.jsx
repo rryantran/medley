@@ -9,6 +9,7 @@ export const UserProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
+  // set user state to the current user if there is one
   useEffect(() => {
     axios
       .get("/api/user/current")
@@ -21,6 +22,7 @@ export const UserProvider = ({ children }) => {
       });
   }, []);
 
+  // set user state after login
   const login = (user) => {
     return axios.post("/api/auth/login", user).then((res) => {
       console.log(res.data);
@@ -29,6 +31,7 @@ export const UserProvider = ({ children }) => {
     });
   };
 
+  // set user state to null after logout
   const logout = () => {
     return axios.post("/api/auth/logout").then((result) => {
       console.log(result.data.message);

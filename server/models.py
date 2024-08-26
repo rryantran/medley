@@ -1,6 +1,6 @@
 from exts import db
 
-# article-user-feed association table
+# article--user-feed association table
 article_userfeed = db.Table('article_userfeed',
                             db.Column('article_id', db.Integer, db.ForeignKey(
                                 'article.id'), primary_key=True),

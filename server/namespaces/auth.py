@@ -23,7 +23,7 @@ login_model = auth_ns.model('LogIn', {
 })
 
 
-# signup route
+# sign up route
 @auth_ns.route('/signup')
 class SignUp(Resource):
     @auth_ns.expect(signup_model)
@@ -42,6 +42,7 @@ class SignUp(Resource):
         email_exists = db.session.execute(
             db.select(User).filter_by(email=data['email'])).scalar()
 
+        #
         if username_exists:
             return {'message': 'Username is already in use'}, 400
         elif email_exists:
@@ -78,8 +79,10 @@ class LogIn(Resource):
 
         response = jsonify(
             {'message': 'Logged in successfully', 'id': user.id})
+
         set_access_cookies(response, access_token)
         set_refresh_cookies(response, refresh_token)
+
         response.status_code = 200
 
         return response
@@ -91,7 +94,9 @@ class LogOut(Resource):
     def post(self):
         '''log out a user'''
         response = jsonify({'message': 'Logged out successfully'})
+
         unset_jwt_cookies(response)
+
         response.status_code = 200
 
         return response
