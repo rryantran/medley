@@ -222,6 +222,7 @@ class CurrentUserArticles(Resource):
             db.select(Article)
             .options(joinedload(Article.feed))
             .filter(Article.feed_id.in_([feed.feed.id for feed in user_feeds]))
+            .order_by(Article.pub_date.desc())
         ).scalars().all()
 
         return_articles = [
