@@ -7,19 +7,17 @@ const NavBarContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin: 0;
-  padding: 25px 100px;
+  padding: 2rem 4rem;
   box-sizing: border-box;
   position: fixed;
   border-bottom: 1px solid #c0c0c0;
-  font-family: Arial, sans-serif;
-  background-color: #ffffff;
+  font-family: Trebuchet MS, sans-serif;
+  background-color: white;
 `;
 
 const Logo = styled(Link)`
-  margin: 0;
   color: black;
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: bold;
   text-decoration: underline;
   text-decoration-thickness: 5px;
@@ -28,12 +26,14 @@ const Logo = styled(Link)`
 
 const LinksContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 2rem;
 `;
 
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: black;
+  font-size: 1rem;
+
   &:hover {
     text-decoration: underline;
     text-decoration-thickness: 3px;
@@ -41,14 +41,12 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const LogOut = styled.button`
+const LogOut = styled.p`
   margin: 0;
-  padding: 0;
   text-decoration: none;
   color: black;
-  background-color: transparent;
-  border: none;
-  font-size: 16px;
+  font-size: 1rem;
+
   &:hover {
     text-decoration: underline;
     text-decoration-thickness: 3px;

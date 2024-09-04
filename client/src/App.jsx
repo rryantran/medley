@@ -8,8 +8,12 @@ import SignUp from "./pages/SignUp";
 import { Route, Routes } from "react-router-dom";
 
 const GlobalContainer = styled.div`
-  padding: 95px 0px 45px;
-  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 7.5rem 0;
+  font-family: Trebuchet MS, sans-serif;
+  background-color: white;
 `;
 
 const App = () => {
