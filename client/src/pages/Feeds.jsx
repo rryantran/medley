@@ -1,35 +1,8 @@
 import axios from "axios";
-import styled from "styled-components";
 import Feed from "../components/Feed";
 import AddFeedPopup from "../components/AddFeedPopup";
 import { useState, useEffect } from "react";
 import { useUser } from "../hooks/UserHook";
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-top: 15px;
-`;
-
-const Heading = styled.h2`
-  margin-bottom: 0px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: right;
-  width: 85%;
-`;
-
-const FeedContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-`;
 
 const Feeds = () => {
   const [feeds, setFeeds] = useState([]);
@@ -63,19 +36,19 @@ const Feeds = () => {
   };
 
   return (
-    <PageContainer>
-      <Heading>Feeds</Heading>
+    <div>
+      <h1>Feeds</h1>
 
-      <ButtonContainer>
+      <div>
         <AddFeedPopup fetchFeeds={fetchFeeds} />
-      </ButtonContainer>
+      </div>
 
-      <FeedContainer>
+      <div>
         {feeds.map((feed) => (
           <Feed key={feed.id} feed={feed} fetchFeeds={fetchFeeds} />
         ))}
-      </FeedContainer>
-    </PageContainer>
+      </div>
+    </div>
   );
 };
 
